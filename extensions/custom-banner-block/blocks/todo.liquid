@@ -1,0 +1,23 @@
+{% assign avg_rating = block.settings.product.metafields.demo.avg_rating.value | round %}
+<span style="color:{{ block.settings.colour }}">
+  {% render 'stars', rating: avg_rating %}
+</span>
+
+  <div id="todo-container-1">
+  Загружаем TODO…
+</div>
+<script defer src="{{ 'todo.js' | asset_url }}"></script>
+  <span>span test</span>
+{% if avg_rating >= 4 %}
+  <br>
+  {{ 'ratings.home.recommendationText' | t }}
+{% endif %}
+
+{% schema %}
+{
+  "name": "Todos",
+  "target": "section",
+  "settings": []
+}
+{% endschema %}
+

@@ -10,6 +10,11 @@ export const loader = async ({ request }) => {
 };
 
 export const action = async ({ request }) => {
+
+  const response = await fetch("https://jsonplaceholder.typicode.com/todos/1");
+  const data = await response.json();
+  console.log(data, 'DATA');
+
  
   const { admin } = await authenticate.admin(request);
   const formData = await request.formData();
@@ -17,7 +22,7 @@ export const action = async ({ request }) => {
   const enabled = formData.get("enabled") === "true";
   const text = formData.get("text") || "привет я баннер";
   const color = formData.get("color") || "#ffffff";
-   console.log('@@@@@@@@@@@@', enabled)
+
   try {
     await saveBannerSettings(admin, { enabled, text, color });
     return { success: true };

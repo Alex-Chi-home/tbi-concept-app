@@ -9,7 +9,7 @@ export default function extension() {
 function Extension() {
     const metafields = useAppMetafields();
   const text_metafield = metafields.find( (m) => m.metafield.key === 'text' )?.metafield?.value;
-  console.log(text_metafield, 'text metafield')
+
   return (
     <s-stack gap="base">
       <s-paragraph>

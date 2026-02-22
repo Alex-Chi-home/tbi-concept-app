@@ -2,7 +2,7 @@
 
 client_id = "58723083e4f529db3116918a098d957f"
 name = "tbi-concept-app"
-application_url = "https://example.com"
+application_url = "https://tbi-concept-app.onrender.com"
 embedded = true
 
 [webhooks]

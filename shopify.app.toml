@@ -12,7 +12,7 @@ api_version = "2026-04"
 scopes = "read_products,write_products,read_themes,write_themes"
 
 [auth]
-redirect_urls = [ "https://example.com/api/auth" ]
+redirect_urls = ["https://tbi-concept-app.onrender.com/api/auth/callback"]
 
 [build]
 automatically_update_urls_on_dev = true

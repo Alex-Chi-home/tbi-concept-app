@@ -1,5 +1,6 @@
 import '@shopify/ui-extensions/preact';
 import {render} from "preact";
+import {useAppMetafields} from '@shopify/ui-extensions/checkout/preact';
 
 // 1. Export the extension
 export default async () => {
@@ -7,7 +8,10 @@ export default async () => {
 };
 
 function Extension() {
+  const metafields = useAppMetafields();
+  const text_metafield = metafields.find( (m) => m.metafield.key === 'text' )?.metafield?.value;
   // 2. Check instructions for feature availability, see https://shopify.dev/docs/api/checkout-ui-extensions/apis/cart-instructions for details
+  console.log(text_metafield, metafields,'shshhs')
   if (!shopify.instructions.value.attributes.canUpdateAttributes) {
     // For checkouts such as draft order invoices, cart attributes may not be allowed
     // Consider rendering a fallback UI or nothing at all, if the feature is unavailable
@@ -26,6 +30,7 @@ function Extension() {
           {shopify.i18n.translate("welcome", {
             target: <s-text type="emphasis">{shopify.extension.target}</s-text>,
           })}
+          {text_metafield}
         </s-text>
         <s-button onClick={handleClick}>
           {shopify.i18n.translate("addAFreeGiftToMyOrder")}

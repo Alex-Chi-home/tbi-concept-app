@@ -1,5 +1,3 @@
-import { graphql } from "../shopify.server";
-
 const METAFIELD_NAMESPACE = "custom_banner";
 const METAFIELD_KEYS = {
   enabled: "enabled",
@@ -69,6 +67,21 @@ export async function saveBannerSettings(admin, { enabled, text, color }) {
     },
   ];
 
+  // Сначала получаем реальный GID магазина
+  const shopResponse = await admin.graphql(`
+    query GetShopId {
+      shop {
+        id
+      }
+    }
+  `);
+  const shopData = await shopResponse.json();
+  const shopId = shopData.data?.shop?.id;
+
+  if (!shopId) {
+    throw new Error("Could not fetch shop ID");
+  }
+
   const response = await admin.graphql(`
     mutation metafieldsSet($metafields: [MetafieldsSetInput!]!) {
       metafieldsSet(metafields: $metafields) {
@@ -87,7 +100,7 @@ export async function saveBannerSettings(admin, { enabled, text, color }) {
     variables: {
       metafields: metafields.map(m => ({
         ...m,
-        ownerId: "gid://shopify/Shop/current", // или можно передать из session
+        ownerId: shopId,
       })),
     },
   });

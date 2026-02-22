@@ -1,4 +1,5 @@
-import { Form, useLoaderData, useSubmit, useActionData } from "react-router";
+import { useState } from "react";
+import { Form, useLoaderData, useNavigation, useActionData } from "react-router";
 import { authenticate } from "../shopify.server";
 import { getBannerSettings, saveBannerSettings } from "../utils/metafields";
 
@@ -9,75 +10,108 @@ export const loader = async ({ request }) => {
 };
 
 export const action = async ({ request }) => {
+ 
   const { admin } = await authenticate.admin(request);
   const formData = await request.formData();
 
-  const enabled = formData.get("enabled") === "on";
+  const enabled = formData.get("enabled") === "true";
   const text = formData.get("text") || "привет я баннер";
   const color = formData.get("color") || "#ffffff";
-
+   console.log('@@@@@@@@@@@@', enabled)
   try {
     await saveBannerSettings(admin, { enabled, text, color });
     return { success: true };
   } catch (error) {
-    return new Response(JSON.stringify({ success: false, error: error.message }), { status: 500 });
+    return { success: false, error: error.message };
   }
 };
 
 export default function AddThemeBanner() {
-  const { enabled, text, color } = useLoaderData();
+  const loaderData = useLoaderData();
   const actionData = useActionData();
-  const submit = useSubmit();
+  const navigation = useNavigation();
+  const isSaving = navigation.state === "submitting";
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.target);
-    submit(formData, { method: "post" });
-  };
+  const [enabled, setEnabled] = useState(loaderData.enabled ?? false);
+  const [text, setText] = useState(loaderData.text ?? "привет я баннер");
+  const [color, setColor] = useState(loaderData.color ?? "#ffffff");
+
+  const isLoading = false
 
   return (
-    <s-page title="Add Theme Banner">
-      <s-card>
-        <s-stack gap="400">
-          <s-heading level="2">Настройки баннера на странице продукта</s-heading>
+    <s-page heading="Custom Banner">
+      <s-section heading="Предпросмотр">
+        {enabled ? (
+          <div
+            style={{
+              backgroundColor: color,
+              padding: "16px",
+              textAlign: "center",
+              borderRadius: "8px",
+              fontWeight: "bold",
+              fontSize: "16px",
+              border: "1px solid #ddd",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            }}
+          >
+            {text}
+          </div>
+        ) : (
+          <s-paragraph>Баннер отключён — включите его ниже чтобы увидеть предпросмотр.</s-paragraph>
+        )}
+      </s-section>
 
-          {actionData?.success && (
-            <s-text tone="success">Настройки успешно сохранены!</s-text>
-          )}
-          {actionData?.error && (
-            <s-text tone="critical">Ошибка: {actionData.error}</s-text>
-          )}
+      <s-section heading="Настройки">
+        {actionData?.success && (
+          <s-banner tone="success" title="Готово">
+            <s-paragraph>Настройки успешно сохранены!</s-paragraph>
+          </s-banner>
+        )}
+        {actionData?.error && (
+          <s-banner tone="critical" title="Ошибка">
+            <s-paragraph>{actionData.error}</s-paragraph>
+          </s-banner>
+        )}
 
-          <Form onSubmit={handleSubmit}>
-            <s-form-layout>
-              <s-switch
-                label="Включить баннер"
-                name="enabled"
-                checked={enabled}
-              />
+        <Form method="post">
+          {/* Все значения через hidden inputs — web-компоненты не участвуют в нативной отправке формы */}
+          <input type="hidden" name="enabled" value={String(enabled)} />
+          <input type="hidden" name="color" value={color} />
+          <input type="hidden" name="text" value={text} />
 
-              <s-text-field
-                label="Текст баннера"
-                name="text"
-                value={text}
-                onInput={(e) => e.target.value} // для controlled — пока не обязательно
-              />
+          <s-form-layout>
+            <s-checkbox
+              label="Включить баннер"
+              checked={enabled || undefined}
+              onChange={(e) => setEnabled(e.target.checked !== undefined ? e.target.checked : !!e.detail?.checked)}
+            />
 
-              <s-color-picker
-                label="Цвет баннера"
+            <s-text-field
+              label="Текст баннера"
+              value={text}
+              onInput={(e) => setText(e.target.value)}
+              autoComplete="off"
+            />
+
+            <s-form-layout-item label="Цвет фона баннера">
+              <input
+                type="color"
                 value={color}
-                onChange={(e) => {
-                  // Можно обновить состояние если нужно controlled
-                }}
+                onChange={(e) => setColor(e.target.value)}
+                style={{ width: "60px", height: "36px", cursor: "pointer", border: "none", borderRadius: "4px" }}
               />
+            </s-form-layout-item>
 
-              <s-button type="submit" primary>
-                Сохранить настройки
-              </s-button>
-            </s-form-layout>
-          </Form>
-        </s-stack>
-      </s-card>
+            <s-button
+            type="submit"
+          
+            {...(isLoading ? { loading: true } : {})}
+          >
+            {isSaving ? "Сохранение..." : "Сохранить настройки"}
+          </s-button>
+          </s-form-layout>
+        </Form>
+      </s-section>
     </s-page>
   );
 }

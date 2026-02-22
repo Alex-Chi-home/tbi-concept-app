@@ -1,0 +1,31 @@
+{{ 'banner.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign banner_enabled = shop.metafields.custom_banner.enabled.value
+  assign banner_text    = shop.metafields.custom_banner.text.value  | default: 'привет я баннер'
+  assign banner_color   = shop.metafields.custom_banner.color.value | default: '#ffffff'
+-%}
+
+{%- if banner_enabled or request.design_mode -%}
+  <div
+    class="custom-banner"
+    style="background-color: {{ banner_color }}; padding: 16px; text-align: center; margin: 16px 0; border-radius: 8px; font-weight: bold; color: {{ block.settings.colour }}"
+  >
+    {%- if banner_enabled -%}
+      {{ banner_text }}
+    {%- else -%}
+      <span style="opacity: 0.5; font-style: italic;">Custom Banner — включите в настройках приложения</span>
+    {%- endif -%}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Custom Banner",
+  "target": "section",
+    "settings": [
+    { "type": "product", "id": "product", "label": "product", "autofill": true },
+    { "type": "color", "id": "colour", "label": "Star Colour", "default": "#ff0000" }
+  ]
+}
+{% endschema %}

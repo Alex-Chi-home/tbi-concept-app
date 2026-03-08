@@ -32,6 +32,10 @@
 
     if (!button || !modal || !iframe) return;
 
+    if (document.body && modal.parentElement !== document.body) {
+      document.body.appendChild(modal);
+    }
+
     const isVisibleElement = (element) => {
       if (!element || element === button) return false;
       if (element.closest('[data-popup-calculator-block]')) return false;
@@ -73,11 +77,13 @@
     const openModal = () => {
       modal.hidden = false;
       button.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('popup-calculator-open');
     };
 
     const closeModal = () => {
       modal.hidden = true;
       button.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('popup-calculator-open');
     };
 
     const getCurrentVariantId = () => {

@@ -1,0 +1,78 @@
+{% assign popup_button_id = 'popup-calculator-button-' | append: block.id %}
+{% assign popup_modal_id = 'popup-calculator-modal-' | append: block.id %}
+{% assign popup_title_id = 'popup-calculator-title-' | append: block.id %}
+{% assign current_variant = nil %}
+
+{% if product %}
+  {% assign current_variant = product.selected_or_first_available_variant | default: product.variants.first %}
+{% endif %}
+
+<div
+  class="popup-calculator-block"
+  {{ block.shopify_attributes }}
+  data-popup-calculator-block
+  data-fallback-variant-id="{{ current_variant.id }}"
+>
+  <button
+    id="{{ popup_button_id }}"
+    class="popup-calculator-button"
+    type="button"
+    aria-haspopup="dialog"
+    aria-controls="{{ popup_modal_id }}"
+    aria-expanded="false"
+    data-popup-calculator-open
+  >
+    {{ 'popup_calculator.open_button' | t }}
+  </button>
+
+  <div
+    id="{{ popup_modal_id }}"
+    class="popup-calculator-modal"
+    hidden
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="{{ popup_title_id }}"
+    data-popup-calculator-modal
+  >
+    <button
+      class="popup-calculator-overlay"
+      type="button"
+      aria-label="{{ 'popup_calculator.close_button' | t }}"
+      data-popup-calculator-close
+    ></button>
+
+    <div class="popup-calculator-dialog" role="document">
+      <div class="popup-calculator-header">
+        <h2 id="{{ popup_title_id }}" class="popup-calculator-title">{{ 'popup_calculator.title' | t }}</h2>
+        <button
+          class="popup-calculator-close"
+          type="button"
+          aria-label="{{ 'popup_calculator.close_button' | t }}"
+          data-popup-calculator-close
+        >
+          ×
+        </button>
+      </div>
+
+      <div class="popup-calculator-frame-shell">
+        <iframe
+          src="http://localhost:3000/calculator"
+          title="{{ 'popup_calculator.iframe_title' | t }}"
+          class="popup-calculator-iframe"
+          loading="lazy"
+          data-popup-calculator-iframe
+        ></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Popup calculator",
+  "target": "section",
+  "stylesheet": "popup-calculator.css",
+  "javascript": "popup-calculator.js",
+  "settings": []
+}
+{% endschema %}

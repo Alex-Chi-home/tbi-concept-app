@@ -1,0 +1,120 @@
+.popup-calculator-block {
+  display: block;
+}
+
+.popup-calculator-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 12px 20px;
+  border: 1px solid currentColor;
+  border-radius: 9999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.popup-calculator-button:hover {
+  opacity: 0.92;
+}
+
+.popup-calculator-button:focus-visible,
+.popup-calculator-close:focus-visible,
+.popup-calculator-overlay:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.popup-calculator-modal[hidden] {
+  display: none;
+}
+
+.popup-calculator-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.popup-calculator-overlay {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+
+.popup-calculator-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(960px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow: hidden;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #111111;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+}
+
+.popup-calculator-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.1);
+}
+
+.popup-calculator-title {
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.3;
+}
+
+.popup-calculator-close {
+  border: 0;
+  background: transparent;
+  color: currentColor;
+  font: inherit;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.popup-calculator-frame-shell {
+  background: #ffffff;
+}
+
+.popup-calculator-iframe {
+  display: block;
+  width: 100%;
+  height: min(80vh, 800px);
+  border: 0;
+}
+
+@media screen and (max-width: 749px) {
+  .popup-calculator-modal {
+    padding: 16px;
+  }
+
+  .popup-calculator-dialog {
+    max-height: calc(100vh - 32px);
+  }
+
+  .popup-calculator-header {
+    padding: 14px 16px;
+  }
+
+  .popup-calculator-iframe {
+    height: 70vh;
+  }
+}

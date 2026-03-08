@@ -11,5 +11,11 @@
     "loading": "Loading TODO…",
     "theme_editor_notice": "Interactive iframe preview is unavailable in the theme editor.",
     "open_app": "Open app preview"
+  },
+  "popup_calculator": {
+    "open_button": "Calculate a Loan",
+    "title": "Loan calculator",
+    "close_button": "Close calculator",
+    "iframe_title": "Credit calculator"
   }
 }

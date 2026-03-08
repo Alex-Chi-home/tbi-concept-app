@@ -1,0 +1,40 @@
+.credit-calculator-block {
+  display: block;
+}
+
+.credit-calculator-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 12px 20px;
+  border: 1px solid currentColor;
+  border-radius: 9999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.credit-calculator-button:hover {
+  opacity: 0.92;
+}
+
+.credit-calculator-button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.credit-calculator-iframe-wrapper {
+  margin-top: 16px;
+}
+
+.credit-calculator-iframe {
+  display: block;
+  max-width: 100%;
+  border: 0;
+}

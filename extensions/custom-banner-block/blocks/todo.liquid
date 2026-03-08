@@ -6,23 +6,23 @@
   {% assign current_variant = product.selected_or_first_available_variant | default: product.variants.first %}
 {% endif %}
 
-<div {{ block.shopify_attributes }}>
+<div class="credit-calculator-block" {{ block.shopify_attributes }}>
   <button
     id="{{ button_id }}"
+    class="credit-calculator-button"
     type="button"
-    style="padding: 12px 20px; cursor: pointer;"
   >
     Calculate a Loan
   </button>
 
-  <div id="{{ iframe_wrapper_id }}" hidden style="margin-top: 16px;">
+  <div id="{{ iframe_wrapper_id }}" class="credit-calculator-iframe-wrapper" hidden>
     <iframe
       src="http://localhost:3000/calculator"
       title="Калькулятор кредита"
+      class="credit-calculator-iframe"
       width="800"
       height="800"
       loading="lazy"
-      style="max-width: 100%; border: 0;"
     ></iframe>
   </div>
 </div>
@@ -33,8 +33,84 @@
     const iframeWrapper = document.getElementById('{{ iframe_wrapper_id }}');
     const iframe = iframeWrapper?.querySelector('iframe');
     const fallbackVariantId = {{ current_variant.id | json }};
+    const themeButtonStyleProperties = [
+      'background',
+      'background-color',
+      'color',
+      'border',
+      'border-radius',
+      'box-shadow',
+      'font-family',
+      'font-size',
+      'font-style',
+      'font-weight',
+      'letter-spacing',
+      'line-height',
+      'padding-top',
+      'padding-right',
+      'padding-bottom',
+      'padding-left',
+      'text-transform'
+    ];
 
     if (!button || !iframeWrapper) return;
+
+    const isVisibleElement = (element) => {
+      if (!element || element === button) {
+        return false;
+      }
+
+      if (element.closest('.credit-calculator-block')) {
+        return false;
+      }
+
+      return element.getClientRects().length > 0 && window.getComputedStyle(element).display !== 'none';
+    };
+
+    const findReferenceButton = () => {
+      const closestSection = button.closest('.shopify-section');
+      const searchRoots = [closestSection, document].filter(Boolean);
+      const selectors = [
+        'form[action*="/cart/add"] button[type="submit"]',
+        'form[action*="/cart/add"] input[type="submit"]',
+        'button[name="add"]',
+        'button[type="submit"]',
+        'input[type="submit"]'
+      ];
+
+      for (const root of searchRoots) {
+        for (const selector of selectors) {
+          const candidate = root.querySelector(selector);
+
+          if (isVisibleElement(candidate)) {
+            return candidate;
+          }
+        }
+      }
+
+      return null;
+    };
+
+    const syncButtonStylesWithTheme = () => {
+      const referenceButton = findReferenceButton();
+
+      if (!referenceButton) {
+        return;
+      }
+
+      const computedStyles = window.getComputedStyle(referenceButton);
+
+      for (const property of themeButtonStyleProperties) {
+        const value = computedStyles.getPropertyValue(property);
+
+        if (value) {
+          button.style.setProperty(property, value);
+        }
+      }
+    };
+
+    syncButtonStylesWithTheme();
+    requestAnimationFrame(syncButtonStylesWithTheme);
 
     const getCurrentVariantId = () => {
       const formVariantField = document.querySelector('form[action*="/cart/add"] [name="id"]');
@@ -142,6 +218,7 @@
 {
   "name": "Credit calculator",
   "target": "section",
+  "stylesheet": "todo.css",
   "settings": []
 }
 {% endschema %}

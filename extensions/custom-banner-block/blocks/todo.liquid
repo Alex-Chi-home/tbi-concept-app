@@ -1,31 +1,44 @@
-{% assign avg_rating = block.settings.product.metafields.demo.avg_rating.value | round %}
-<span style="color:{{ block.settings.colour }}">
-  {% render 'stars', rating: avg_rating %}
-</span>
+{% assign button_id = 'credit-button-' | append: block.id %}
+{% assign iframe_wrapper_id = 'credit-iframe-wrapper-' | append: block.id %}
 
-  <div id="todo-container-1">
-  Загружаем TODO…
+<div {{ block.shopify_attributes }}>
+  <button
+    id="{{ button_id }}"
+    type="button"
+    style="padding: 12px 20px; cursor: pointer;"
+  >
+    Рассчитать кредит
+  </button>
+
+  <div id="{{ iframe_wrapper_id }}" hidden style="margin-top: 16px;">
+    <iframe
+      src="http://localhost:3000/calculator"
+      title="Калькулятор кредита"
+      width="800"
+      height="500"
+      loading="lazy"
+      style="max-width: 100%; border: 0;"
+    ></iframe>
+  </div>
 </div>
 
-  <iframe
-    src="https://simple-telegram-peach.vercel.app"
-    title="Todo app"
-    width="800"
-    height="500"
-    loading="lazy"
-    style="max-width: 100%; border: 0;"
-  ></iframe>
+<script>
+  (() => {
+    const button = document.getElementById('{{ button_id }}');
+    const iframeWrapper = document.getElementById('{{ iframe_wrapper_id }}');
 
-<script defer src="{{ 'todo.js' | asset_url }}"></script>
-  <span>span test</span>
-{% if avg_rating >= 4 %}
-  <br>
-  {{ 'ratings.home.recommendationText' | t }}
-{% endif %}
+    if (!button || !iframeWrapper) return;
+
+    button.addEventListener('click', () => {
+      iframeWrapper.hidden = false;
+      button.style.display = 'none';
+    });
+  })();
+</script>
 
 {% schema %}
 {
-  "name": "Todos",
+  "name": "Credit calculator",
   "target": "section",
   "settings": []
 }

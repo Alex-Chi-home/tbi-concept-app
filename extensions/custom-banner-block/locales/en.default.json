@@ -6,5 +6,10 @@
     "home": {
       "recommendationText": "Recommended Product!"
     }
+  },
+  "todo": {
+    "loading": "Loading TODO…",
+    "theme_editor_notice": "Interactive iframe preview is unavailable in the theme editor.",
+    "open_app": "Open app preview"
   }
 }

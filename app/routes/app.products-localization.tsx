@@ -278,7 +278,7 @@ function TranslationEditor({
       {isLoading ? (
         <s-stack direction="inline" alignItems="center" gap="base">
           <s-spinner />
-          <s-text>Загрузка переводов…</s-text>
+          <s-text>Translation Loading...</s-text>
         </s-stack>
       ) : (
         <s-stack direction="block" gap="base">
@@ -289,7 +289,7 @@ function TranslationEditor({
               <s-text-area
                 key={key}
                 label={KEY_LABELS[key]}
-                details={original ? `Оригинал (${primaryLocale?.name ?? primaryLocale?.locale}): ${original.value}` : undefined}
+                details={original ? `Original (${primaryLocale?.name ?? primaryLocale?.locale}): ${original.value}` : undefined}
                 value={fieldValues[key] ?? ""}
                 rows={4}
                 onInput={(e: Event) =>
@@ -301,7 +301,7 @@ function TranslationEditor({
               <s-text-field
                 key={key}
                 label={KEY_LABELS[key]}
-                details={original ? `Оригинал (${primaryLocale?.name ?? primaryLocale?.locale}): ${original.value}` : undefined}
+                details={original ? `Original (${primaryLocale?.name ?? primaryLocale?.locale}): ${original.value}` : undefined}
                 value={fieldValues[key] ?? ""}
                 onInput={(e: Event) =>
                   setFieldValues((prev) => ({ ...prev, [key]: (e.target as HTMLInputElement).value }))

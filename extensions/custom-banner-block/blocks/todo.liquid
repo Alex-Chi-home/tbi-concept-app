@@ -12,7 +12,7 @@
     type="button"
     style="padding: 12px 20px; cursor: pointer;"
   >
-    Рассчитать кредит
+    Calculate a Loan
   </button>
 
   <div id="{{ iframe_wrapper_id }}" hidden style="margin-top: 16px;">
@@ -20,7 +20,7 @@
       src="http://localhost:3000/calculator"
       title="Калькулятор кредита"
       width="800"
-      height="500"
+      height="800"
       loading="lazy"
       style="max-width: 100%; border: 0;"
     ></iframe>
@@ -52,6 +52,38 @@
       return fallbackVariantId;
     };
 
+    const addItemToCart = async (eventData = {}) => {
+      const variantId = eventData.variantId || getCurrentVariantId();
+      const requestedQuantity = Number(eventData.quantity ?? 1);
+      const quantity = Number.isFinite(requestedQuantity) && requestedQuantity > 0 ? requestedQuantity : 1;
+
+      if (!variantId) {
+        throw new Error("Variant id was not found on the current page");
+      }
+
+      const response = await fetch(window.Shopify.routes.root + "cart/add.js", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          items: [
+            {
+              id: Number(variantId),
+              quantity: quantity
+            }
+          ]
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Cart add failed with status ${response.status}`);
+      }
+
+      return response;
+    };
+
     window.addEventListener("message", function(event) {
     if (event.source !== iframe?.contentWindow) {
         return
@@ -68,6 +100,17 @@
     {% comment %} window.location.href = "https://alex-chi-store.myshopify.com/cart" {% endcomment %}
     {% comment %} window.history.pushState({}, "", "/cart") {% endcomment %}
 })
+	    window.addEventListener("message", async function(event) {
+    if (event.source !== iframe?.contentWindow) {
+        return
+    }
+
+    if (event.data?.type !== "TO_CHECKOUT_EVENT") {
+        return
+    }
+
+	    window.location.href = window.Shopify.routes.root + "checkout";
+})
 
     window.addEventListener("message", async function(event) {
     if (event.source !== iframe?.contentWindow) {
@@ -78,37 +121,10 @@
         return
     }
 
-    const variantId = event.data?.variantId || getCurrentVariantId();
-    const requestedQuantity = Number(event.data?.quantity ?? 1);
-    const quantity = Number.isFinite(requestedQuantity) && requestedQuantity > 0 ? requestedQuantity : 1;
-
-    if (!variantId) {
-        console.error("Variant id was not found on the current page")
-        return
-    }
-
     try {
-        const response = await fetch(window.Shopify.routes.root + "cart/add.js", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
-            body: JSON.stringify({
-                items: [
-                    {
-                        id: Number(variantId),
-                        quantity: quantity
-                    }
-                ]
-            })
-        })
+	        await addItemToCart(event.data)
 
-        if (!response.ok) {
-            throw new Error(`Cart add failed with status ${response.status}`)
-        }
-
-        {% comment %} window.location.href = window.Shopify.routes.root + "cart"; {% endcomment %}
+        window.location.href = window.Shopify.routes.root + "cart";
     } catch (error) {
         console.error("Failed to add the product to the cart", error)
     }

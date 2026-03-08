@@ -1,5 +1,10 @@
 {% assign button_id = 'credit-button-' | append: block.id %}
 {% assign iframe_wrapper_id = 'credit-iframe-wrapper-' | append: block.id %}
+{% assign current_variant = nil %}
+
+{% if product %}
+  {% assign current_variant = product.selected_or_first_available_variant | default: product.variants.first %}
+{% endif %}
 
 <div {{ block.shopify_attributes }}>
   <button
@@ -26,10 +31,32 @@
   (() => {
     const button = document.getElementById('{{ button_id }}');
     const iframeWrapper = document.getElementById('{{ iframe_wrapper_id }}');
+    const iframe = iframeWrapper?.querySelector('iframe');
+    const fallbackVariantId = {{ current_variant.id | json }};
 
     if (!button || !iframeWrapper) return;
 
+    const getCurrentVariantId = () => {
+      const formVariantField = document.querySelector('form[action*="/cart/add"] [name="id"]');
+
+      if (formVariantField && formVariantField.value) {
+        return formVariantField.value;
+      }
+
+      const urlVariantId = new URLSearchParams(window.location.search).get('variant');
+
+      if (urlVariantId) {
+        return urlVariantId;
+      }
+
+      return fallbackVariantId;
+    };
+
     window.addEventListener("message", function(event) {
+    if (event.source !== iframe?.contentWindow) {
+        return
+    }
+
     if (event.data?.type !== "TO_CART_EVENT") {
         return
     }
@@ -42,14 +69,50 @@
     {% comment %} window.history.pushState({}, "", "/cart") {% endcomment %}
 })
 
-    window.addEventListener("message", function(event) {
+    window.addEventListener("message", async function(event) {
+    if (event.source !== iframe?.contentWindow) {
+        return
+    }
+
     if (event.data?.type !== "ADD_TO_CART_EVENT") {
         return
     }
 
+    const variantId = event.data?.variantId || getCurrentVariantId();
+    const requestedQuantity = Number(event.data?.quantity ?? 1);
+    const quantity = Number.isFinite(requestedQuantity) && requestedQuantity > 0 ? requestedQuantity : 1;
 
-    window.location.href = window.Shopify.routes.root + "cart";
-  
+    if (!variantId) {
+        console.error("Variant id was not found on the current page")
+        return
+    }
+
+    try {
+        const response = await fetch(window.Shopify.routes.root + "cart/add.js", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify({
+                items: [
+                    {
+                        id: Number(variantId),
+                        quantity: quantity
+                    }
+                ]
+            })
+        })
+
+        if (!response.ok) {
+            throw new Error(`Cart add failed with status ${response.status}`)
+        }
+
+        {% comment %} window.location.href = window.Shopify.routes.root + "cart"; {% endcomment %}
+    } catch (error) {
+        console.error("Failed to add the product to the cart", error)
+    }
+
 })
 
     button.addEventListener('click', () => {

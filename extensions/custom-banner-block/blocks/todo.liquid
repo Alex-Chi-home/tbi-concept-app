@@ -29,6 +29,29 @@
 
     if (!button || !iframeWrapper) return;
 
+    window.addEventListener("message", function(event) {
+    if (event.data?.type !== "TO_CART_EVENT") {
+        return
+    }
+
+    {% comment %} if (window.location.pathname === "/cart") {
+        return
+    } {% endcomment %}
+    window.location.href = window.Shopify.routes.root + "cart";
+    {% comment %} window.location.href = "https://alex-chi-store.myshopify.com/cart" {% endcomment %}
+    {% comment %} window.history.pushState({}, "", "/cart") {% endcomment %}
+})
+
+    window.addEventListener("message", function(event) {
+    if (event.data?.type !== "ADD_TO_CART_EVENT") {
+        return
+    }
+
+
+    window.location.href = window.Shopify.routes.root + "cart";
+  
+})
+
     button.addEventListener('click', () => {
       iframeWrapper.hidden = false;
       button.style.display = 'none';

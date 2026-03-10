@@ -1,0 +1,11 @@
+query CartPaymentMethodsTransformRunInput {
+  cart {
+    lines {
+      quantity
+    }
+  }
+  paymentMethods {
+    id
+    name
+  }
+}

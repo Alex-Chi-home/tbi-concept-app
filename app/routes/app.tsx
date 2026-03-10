@@ -4,16 +4,29 @@ import { boundary } from "@shopify/shopify-app-react-router/server";
 import { AppProvider } from "@shopify/shopify-app-react-router/react";
 
 import { authenticate } from "../shopify.server";
+import {
+  ensureAutomaticPaymentCustomization,
+  type PaymentCustomizationSetupResult,
+} from "../utils/payment-customization.server";
+
+export type AppOutletContext = {
+  paymentCustomizationSetup: PaymentCustomizationSetupResult;
+};
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await authenticate.admin(request);
+  const { admin } = await authenticate.admin(request);
+  const paymentCustomizationSetup =
+    await ensureAutomaticPaymentCustomization(admin);
 
   // eslint-disable-next-line no-undef
-  return { apiKey: process.env.SHOPIFY_API_KEY || "" };
+  return {
+    apiKey: process.env.SHOPIFY_API_KEY || "",
+    paymentCustomizationSetup,
+  };
 };
 
 export default function App() {
-  const { apiKey } = useLoaderData<typeof loader>();
+  const { apiKey, paymentCustomizationSetup } = useLoaderData<typeof loader>();
 
   return (
     <AppProvider embedded apiKey={apiKey}>
@@ -23,7 +36,12 @@ export default function App() {
         <s-link href="/app/add-theme-banner">Custom Banner</s-link>
         <s-link href="/app/products-localization">Localization</s-link>
       </s-app-nav>
-      <Outlet />
+      {!paymentCustomizationSetup.ok && (
+        <s-banner tone="critical" heading="Payment customization setup failed">
+          <s-paragraph>{paymentCustomizationSetup.message}</s-paragraph>
+        </s-banner>
+      )}
+      <Outlet context={{ paymentCustomizationSetup }} />
     </AppProvider>
   );
 }

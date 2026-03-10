@@ -2,18 +2,12 @@ import { useEffect } from "react";
 import type {
   ActionFunctionArgs,
   HeadersFunction,
-  LoaderFunctionArgs,
 } from "react-router";
-import { useFetcher } from "react-router";
+import { useFetcher, useOutletContext } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import { boundary } from "@shopify/shopify-app-react-router/server";
-
-export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await authenticate.admin(request);
-
-  return null;
-};
+import type { AppOutletContext } from "./app";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { admin } = await authenticate.admin(request);
@@ -86,6 +80,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export default function Index() {
   const fetcher = useFetcher<typeof action>();
+  const { paymentCustomizationSetup } = useOutletContext<AppOutletContext>();
 
   const shopify = useAppBridge();
   const isLoading =
@@ -105,6 +100,29 @@ export default function Index() {
       <s-button slot="primary-action" onClick={generateProduct}>
         Generate a product
       </s-button>
+
+      <s-section heading="Payment customization status">
+        <s-banner
+          tone={paymentCustomizationSetup.ok ? "success" : "critical"}
+          heading={
+            paymentCustomizationSetup.ok
+              ? "Automatic payment customization is active"
+              : "Automatic payment customization needs attention"
+          }
+        >
+          <s-stack direction="block" gap="base">
+            <s-paragraph>{paymentCustomizationSetup.message}</s-paragraph>
+            <s-paragraph>
+              This app automatically manages the `TBI Bank Test` payment
+              customization for checkout testing.
+            </s-paragraph>
+            <s-paragraph>
+              Test cases: hide the method below 3 items, show it at 3-4 items,
+              and rename supported methods at 5+ items.
+            </s-paragraph>
+          </s-stack>
+        </s-banner>
+      </s-section>
 
       <s-section heading="Congrats on creating a new Shopify app 🎉">
         <s-paragraph>

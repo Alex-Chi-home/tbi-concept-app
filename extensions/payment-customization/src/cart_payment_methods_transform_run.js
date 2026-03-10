@@ -13,7 +13,6 @@ const NO_CHANGES = {
   operations: [],
 };
 
-
 const MIN_ITEMS_TO_SHOW_MANUAL_METHOD = 3;
 const MIN_ITEMS_TO_RENAME_METHODS = 5;
 const TARGET_MANUAL_METHOD_NAME = "tbi bank test";

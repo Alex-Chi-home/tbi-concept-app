@@ -84,29 +84,29 @@ export function cartPaymentMethodsTransformRun(input) {
   );
   const paymentMethods = input.paymentMethods ?? [];
 
-  logDebug("function started", {
-    totalQuantity,
-    paymentMethodCount: paymentMethods.length,
-  });
-  logDebug(
-    "payment methods",
-    paymentMethods.map((paymentMethod) => ({
-      id: paymentMethod.id,
-      name: paymentMethod.name,
-    }))
-  );
+  // logDebug("function started", {
+  //   totalQuantity,
+  //   paymentMethodCount: paymentMethods.length,
+  // });
+  // logDebug(
+  //   "payment methods",
+  //   paymentMethods.map((paymentMethod) => ({
+  //     id: paymentMethod.id,
+  //     name: paymentMethod.name,
+  //   }))
+  // );
 
   /** @type {Operation[]} */
   const operations = [];
 
   const targetManualMethod = paymentMethods.find(isTargetManualMethod);
 
-  logDebug("target manual method", targetManualMethod
-    ? {
-        id: targetManualMethod.id,
-        name: targetManualMethod.name,
-      }
-    : { found: false, targetName: TARGET_MANUAL_METHOD_NAME });
+  // logDebug("target manual method", targetManualMethod
+  //   ? {
+  //       id: targetManualMethod.id,
+  //       name: targetManualMethod.name,
+  //     }
+  //   : { found: false, targetName: TARGET_MANUAL_METHOD_NAME });
 
   if (totalQuantity < MIN_ITEMS_TO_SHOW_MANUAL_METHOD && targetManualMethod) {
     operations.push({
@@ -131,27 +131,27 @@ export function cartPaymentMethodsTransformRun(input) {
     }
   }
 
-  logDebug(
-    "planned operations",
-    operations.map((operation) => {
-      if (operation.paymentMethodHide) {
-        return {
-          type: "hide",
-          paymentMethodId: operation.paymentMethodHide.paymentMethodId,
-        };
-      }
+  // logDebug(
+  //   "planned operations",
+  //   operations.map((operation) => {
+  //     if (operation.paymentMethodHide) {
+  //       return {
+  //         type: "hide",
+  //         paymentMethodId: operation.paymentMethodHide.paymentMethodId,
+  //       };
+  //     }
 
-      if (operation.paymentMethodRename) {
-        return {
-          type: "rename",
-          paymentMethodId: operation.paymentMethodRename.paymentMethodId,
-          name: operation.paymentMethodRename.name,
-        };
-      }
+  //     if (operation.paymentMethodRename) {
+  //       return {
+  //         type: "rename",
+  //         paymentMethodId: operation.paymentMethodRename.paymentMethodId,
+  //         name: operation.paymentMethodRename.name,
+  //       };
+  //     }
 
-      return { type: "unknown" };
-    })
-  );
+  //     return { type: "unknown" };
+  //   })
+  // );
 
   if (operations.length === 0) {
     logDebug("no changes returned");

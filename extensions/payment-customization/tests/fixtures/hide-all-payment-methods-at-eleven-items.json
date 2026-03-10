@@ -1,0 +1,25 @@
+{
+  "payload": {
+    "export": "cart-payment-methods-transform-run",
+    "target": "cart.payment-methods.transform.run",
+    "input": {
+      "cart": {
+        "lines": [{ "quantity": 6 }, { "quantity": 5 }]
+      },
+      "paymentMethods": [
+        { "id": "gid://shopify/PaymentCustomizationPaymentMethod/1", "name": "TBI Bank Test" },
+        { "id": "gid://shopify/PaymentCustomizationPaymentMethod/2", "name": "Credit card" },
+        { "id": "gid://shopify/PaymentCustomizationPaymentMethod/3", "name": "(for testing) Bogus Gateway" },
+        { "id": "gid://shopify/PaymentCustomizationPaymentMethod/4", "name": "Shop Pay" }
+      ]
+    },
+    "output": {
+      "operations": [
+        { "paymentMethodHide": { "paymentMethodId": "gid://shopify/PaymentCustomizationPaymentMethod/1" } },
+        { "paymentMethodHide": { "paymentMethodId": "gid://shopify/PaymentCustomizationPaymentMethod/2" } },
+        { "paymentMethodHide": { "paymentMethodId": "gid://shopify/PaymentCustomizationPaymentMethod/3" } },
+        { "paymentMethodHide": { "paymentMethodId": "gid://shopify/PaymentCustomizationPaymentMethod/4" } }
+      ]
+    }
+  }
+}

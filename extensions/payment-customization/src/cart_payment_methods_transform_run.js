@@ -15,6 +15,7 @@ const NO_CHANGES = {
 
 const MIN_ITEMS_TO_SHOW_MANUAL_METHOD = 3;
 const MIN_ITEMS_TO_RENAME_METHODS = 5;
+const MIN_ITEMS_TO_HIDE_ALL_PAYMENT_METHODS = 11;
 const TARGET_MANUAL_METHOD_NAME = "tbi bank test";
 const NON_RENAMEABLE_NAME_PARTS = [
   "shop pay",
@@ -98,6 +99,23 @@ export function cartPaymentMethodsTransformRun(input) {
 
   /** @type {Operation[]} */
   const operations = [];
+
+  if (totalQuantity >= MIN_ITEMS_TO_HIDE_ALL_PAYMENT_METHODS) {
+    const hideAllOperations = paymentMethods.map((paymentMethod) => ({
+      paymentMethodHide: {
+        paymentMethodId: paymentMethod.id,
+      },
+    }));
+
+    logDebug("hiding all payment methods", {
+      totalQuantity,
+      paymentMethodCount: paymentMethods.length,
+    });
+
+    return {
+      operations: hideAllOperations,
+    };
+  }
 
   const targetManualMethod = paymentMethods.find(isTargetManualMethod);
 
